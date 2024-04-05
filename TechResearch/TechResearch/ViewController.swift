@@ -12,28 +12,25 @@ import ARKit
 class ViewController: UIViewController, ARSCNViewDelegate {
 
     @IBOutlet var sceneView: ARSCNView!
-   
-    var treeNode: SCNNode?
-    var eyeballNode : SCNNode?
+    var antNode: SCNNode?
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
         sceneView.delegate = self
         sceneView.automaticallyUpdatesLighting = true
-       let treeScene = SCNScene(named: "art.scnassets/tree.scn")
-       let eyeballScene = SCNScene(named: "art.scnassets./eyeball.scn")
-        treeNode = treeScene?.rootNode
-        eyeballNode = eyeballScene?.rootNode
+        let antScene = SCNScene(named: "art.scnassets/ant.scn")
+        antNode = antScene?.rootNode
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         let configuration = ARImageTrackingConfiguration()
         
-        if let trackingImages = ARReferenceImage.referenceImages(inGroupNamed: "Illustrations", bundle: Bundle.main){
+        if let trackingImages = ARReferenceImage.referenceImages(inGroupNamed: "poster", bundle: Bundle.main){
             
             configuration.trackingImages = trackingImages
-            configuration.maximumNumberOfTrackedImages = 2
+            configuration.maximumNumberOfTrackedImages = 1
         }
         
         sceneView.session.run(configuration)
@@ -56,23 +53,11 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             planeNode.eulerAngles.x = -.pi / 2
             node.addChildNode(planeNode)
             
-            var shapeNode: SCNNode?
-            switch imageAnchor.referenceImage.name{
-            case cardType.denari.rawValue :
-            shapeNode = treeNode
-            case cardType.spade.rawValue :
-            shapeNode = eyeballNode
-            default :
-                break
-            }
-         
-            guard let shape = shapeNode else {return nil}
-            node.addChildNode(shape)
+            if let shapeNode = antNode {
+                node.addChildNode(shapeNode)
+            }else{print("Errore")}
         }
         return node
     }
-    enum cardType : String {
-    case denari = "denari"
-    case spade = "spade"
-    }
+    
 }
